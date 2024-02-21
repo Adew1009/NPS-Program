@@ -1,75 +1,65 @@
 import urllib.request
 import json
 from config import api_key 
-from park_dict import park_dict
-# Configure API request
-# endpoint = "https://developer.nps.gov/api/v1/parks?limit=600"
-# HEADERS = {"X-Api-Key":f"{api_key}"}
-# req = urllib.request.Request(endpoint, headers=HEADERS)
+from park_dict import *
 
-# # Execute request and parse response
-# response = urllib.request.urlopen(req).read()
-# data = json.loads(response.decode('utf-8'))
+def all_national_parks():
+    endpoint = "https://developer.nps.gov/api/v1/parks?limit=600"
+    HEADERS = {"X-Api-Key":f"{api_key}"}
+    req = urllib.request.Request(endpoint, headers=HEADERS)
+    # Execute request and parse response
+    response = urllib.request.urlopen(req).read()
+    data = json.loads(response.decode('utf-8'))
+    # Prepare and execute output
+    for park in data["data"]:
+        park_dict[park['fullName']]=park['parkCode']
+        print(park_dict)
 
-# # Prepare and execute output
-# for park in data["data"]:
-    
-#     park_dict[park['fullName']]=park['parkCode']
-#     print(park_dict)
-
-# # Configure API request park-names-by-state.py
-
-# state = input("Enter the State abbreviation: ")
-# endpoint = "https://developer.nps.gov/api/v1/parks?stateCode=" + state
-# HEADERS = {"X-Api-Key":f"{api_key}"}
-# req = urllib.request.Request(endpoint,headers=HEADERS)
-
-# # Execute request and parse response
-# response = urllib.request.urlopen(req).read()
-# data = json.loads(response.decode('utf-8'))
-
-# # Prepare list of parks
-# numParks = data["total"]
-# print("There are " + str(numParks) + " in " + state.upper() + ".")
-# for park in data["data"]:
-#     # print(park)
-#     print(f"Park Name: {park['fullName']}",f"Park Code: {park['parkCode']}")
+def parks_by_state():
+    state = input("Enter the State abbreviation: ")
+    endpoint = "https://developer.nps.gov/api/v1/parks?stateCode=" + state
+    HEADERS = {"X-Api-Key":f"{api_key}"}
+    req = urllib.request.Request(endpoint,headers=HEADERS)
+    # Execute request and parse response
+    response = urllib.request.urlopen(req).read()
+    data = json.loads(response.decode('utf-8'))
+    # Prepare list of parks
+    numParks = data["total"]
+    print("There are " + str(numParks) + " in " + state.upper() + ".")
+    for park in data["data"]:
+        # print(park)
+        print(f"Park Name: {park['fullName']}",f"Park Code: {park['parkCode']}")
 
 
-
-# state = input("Enter the State abbreviation: ")
-# endpoint = "https://developer.nps.gov/api/v1/alerts?parkCode=shil"
-# HEADERS = {"X-Api-Key":f"{api_key}"}
-# req = urllib.request.Request(endpoint,headers=HEADERS)
-
-# Execute request and parse response
-# response = urllib.request.urlopen(req).read()
-# data = json.loads(response.decode('utf-8'))
-
-# # Prepare list of parks
-# # numParks = data["total"]
-# # print("There are " + str(numParks) + " in " + state.upper() + ".")
-# for alert in data["data"]:
-#     print(alert["title"],alert["url"],alert["description"])
-#     # print(park)
+def alerts_by_state():
+    state = input("Enter the State abbreviation: ")
+    endpoint = f"https://developer.nps.gov/api/v1/alerts?stateCode={state}"
+    HEADERS = {"X-Api-Key":f"{api_key}"}
+    req = urllib.request.Request(endpoint,headers=HEADERS)
+    # Execute request and parse response
+    response = urllib.request.urlopen(req).read()
+    data = json.loads(response.decode('utf-8'))
+    for alert in data["data"]:
+        print(alert["title"],alert["url"],alert["description"], '\n')
+        # print(park)
     
 
-
-# endpoint = "https://developer.nps.gov/api/v1/passportstamplocations?parkCode=shil"
-# HEADERS = {"X-Api-Key":f"{api_key}"}
-# req = urllib.request.Request(endpoint,headers=HEADERS)
-
-# # Execute request and parse response
-# response = urllib.request.urlopen(req).read()
-# data = json.loads(response.decode('utf-8'))
-
-# # Prepare list of parks
-# # numParks = data["total"]
-# # print("There are " + str(numParks) + " in " + state.upper() + ".")
-# for location in data["data"]:
-#     print(location["id"], location["label"],location["parks"])
+def passport_stamp_location():
+    park_code = input("Enter Park Code: ")
+    endpoint = f"https://developer.nps.gov/api/v1/passportstamplocations?parkCode={park_code}"
+    HEADERS = {"X-Api-Key":f"{api_key}"}
+    req = urllib.request.Request(endpoint,headers=HEADERS)
+    response = urllib.request.urlopen(req).read()
+    data = json.loads(response.decode('utf-8'))
+    locations = ''
+    for location in data["data"]:
+        locations+=location['label']
+        if len(location)>=1:
+            locations += ", "
+    print(f"You can get your passport stamped at {locations}inside the {location['parks'][0]['fullName']}.", '\n')
 
    
-#     # print(park)
 
-print(park_dict['Zion National Park'])
+
+# alerts_by_state()
+passport_stamp_location()
